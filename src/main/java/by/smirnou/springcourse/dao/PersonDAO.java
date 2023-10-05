@@ -1,83 +1,45 @@
 package by.smirnou.springcourse.dao;
 
 import by.smirnou.springcourse.models.Person;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import java.sql.*;
-import java.util.ArrayList;
+
 import java.util.List;
 
 @Component
 public class PersonDAO {
-    private  static final String URL = "jdbc:postgresql://localhost:5432/first_db";
-    private static final String USERNAME ="postgres";
-    private static final String PASSWORD = "Postgres";
 
-    private static Connection connection;
+    private final JdbcTemplate jdbcTemplate;
 
-    static {
-        try {
-            Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            connection = DriverManager.getConnection(URL, USERNAME ,PASSWORD);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    @Autowired
+    public PersonDAO(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
 
-    public List<Person> index() throws SQLException {
-        List<Person> people = new ArrayList<>();
-
-        try {
-            Statement statement = connection.createStatement();
-            String SQL = "SELECT * FROM Person";
-            ResultSet resultSet = statement.executeQuery(SQL);
-
-            while (resultSet.next()){
-                Person person = new Person();
-                person.setId(resultSet.getInt("id"));
-                person.setName(resultSet.getString("name"));
-                person.setEmail(resultSet.getString("email"));
-                person.setAge(resultSet.getInt("age"));
-
-                people.add(person);
-            }
-        }
-        catch (SQLException e){
-            e.printStackTrace();
-        }
-        return people;
+    public List<Person> index() {
+     return jdbcTemplate.query("SELECT * FROM Person" , new BeanPropertyRowMapper<>(Person.class));
     }
 
-    public Person show(int id){
-//        return  people.stream()
-//                .filter(people -> people.getId() == id)
-//                .findAny().orElse(null);
-        return null;
-    }
-    public void save(Person person) throws SQLException {
-//        person.setId(++PEOPLE_COUNT);
-//        people.add(person);
-
-        Statement statement = connection.createStatement();
-        String SQL = "INSER INTO Person VALUES(" + 1 + ",'" + person.getEmail() +
-                "'," + person.getAge() + ",'" + person.getEmail() + "')";
-        statement.executeUpdate(SQL);
+    public Person show(int id) {
+        return jdbcTemplate.query("SElECT * FROM Person WHERE id=?" ,new Object[]{id}, new BeanPropertyRowMapper<>(Person.class))
+                .stream().findAny().orElse(null);
     }
 
-    public void update(int id, Person updatePerson){
-//        Person personToBeUpdated = show(id);
-//        personToBeUpdated.setName(updatePerson.getName());
-//        personToBeUpdated.setAge(updatePerson.getAge());
-//        personToBeUpdated.setEmail(updatePerson.getEmail());
+    public void save(Person person) {
+        jdbcTemplate.update("INSERT INTO Person VALUES  (1,?, ?, ?)", person.getName(),person.getAge(),person.getEmail());
     }
 
-    public void delete(int id){
-//        people.removeIf(p -> p.getId() == id);
+    public void update(int id, Person updatePerson) {
+        jdbcTemplate.update("UPDATE Person SET name = ? , age = ? , email = ?, where id = ?",
+                updatePerson.getName(), updatePerson.getAge() , updatePerson.getEmail() , id);
+
+    }
+
+    public void delete(int id) {
+        jdbcTemplate.update("DELETE FROM Person where  id = ?" , id);
     }
 }

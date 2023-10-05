@@ -40,6 +40,12 @@
 
 
 
+    <!-- https://mvnrepository.com/artifact/org.springframework/spring-jdbc -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jdbc</artifactId>
+      <version>6.0.12</version>
+    </dependency>
 
 
 
@@ -71,22 +77,6 @@
       <artifactId>postgresql</artifactId>
       <version>42.6.0</version>
     </dependency>
-
-
-
-
-
-
-    <!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-jasper -->
-    <dependency>
-      <groupId>org.apache.tomcat.embed</groupId>
-      <artifactId>tomcat-embed-jasper</artifactId>
-      <version>11.0.0-M11</version>
-    </dependency>
-
-
-
-
 
     <dependency>
       <groupId>junit</groupId>
