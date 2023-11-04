@@ -3,6 +3,7 @@ package by.smirnou.springcourse.controlles;
 
 import by.smirnou.springcourse.dao.PersonDAO;
 import by.smirnou.springcourse.models.Person;
+
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,14 +12,18 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 
+//@PathVariable сопряжение из маппинга и объекта в параметрах
+//@ModelAttribute внедреяет из формы в объект
+
 @Controller
 @RequestMapping("/people")
 public class PeopleController {
 
     private final PersonDAO personDAO;
+//    private final PersonValidator personValidator;
 
     @Autowired
-    public PeopleController(PersonDAO personDAO){
+    public PeopleController(PersonDAO personDAO ){
         this.personDAO = personDAO;
     }
 
@@ -66,6 +71,8 @@ public class PeopleController {
 
     //@PathVariable сопряжение из маппинга и объекта в параметрах
     //@@ModelAttribute внедреяет из формы в объект
+
+
     @PatchMapping("/{id}")
     public String update(@ModelAttribute("person") @Valid Person person,
                          BindingResult bindingResult,
