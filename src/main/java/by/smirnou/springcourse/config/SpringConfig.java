@@ -7,10 +7,14 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -29,6 +33,7 @@ import java.util.Properties;
 @EnableWebMvc
 @PropertySource("classpath:hibernate.properties")
 @EnableTransactionManagement
+@EnableJpaRepositories("by.smirnou.springcourse.repositories")
 public class SpringConfig implements WebMvcConfigurer {
 
 //    private final Environment environment;
@@ -48,8 +53,9 @@ public class SpringConfig implements WebMvcConfigurer {
     public SpringResourceTemplateResolver templateResolver() {
         SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
         templateResolver.setApplicationContext(applicationContext);
-        templateResolver.setPrefix("/WEB-INF/view");
+        templateResolver.setPrefix("/WEB-INF/view/");
         templateResolver.setSuffix(".html");
+        templateResolver.setCharacterEncoding("UTF-8");
         return templateResolver;
     }
 
@@ -95,23 +101,49 @@ public class SpringConfig implements WebMvcConfigurer {
         return properties;
     }
 
-    @Bean
-    public LocalSessionFactoryBean sessionFactory(){
-        LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
-        sessionFactory.setDataSource(dataSource()); //Указываем все сущности из dataSource
-        sessionFactory.setPackagesToScan("by.snirnou.springcource.models");
-        sessionFactory.setHibernateProperties(hibernateProperties());
+//    @Bean
+//    public LocalSessionFactoryBean sessionFactory(){
+//        LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
+//        sessionFactory.setDataSource(dataSource()); //Указываем все сущности из dataSource
+//        sessionFactory.setPackagesToScan("by.snirnou.springcource.models");
+//        sessionFactory.setHibernateProperties(hibernateProperties());
+//
+//        return sessionFactory;
+//    }
 
-        return sessionFactory;
+    @Bean
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(){
+        final LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
+        em.setDataSource((dataSource()));
+        em.setPackagesToScan("by.smirnou.springcourse.models");
+
+        final HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        em.setJpaVendorAdapter(vendorAdapter);
+        em.setJpaProperties(hibernateProperties());
+
+        return em;
     }
 
-    @Bean       //Метод для Контроля транзакциями
-    public PlatformTransactionManager hibernateTransactionManager(){
-        HibernateTransactionManager transactionManager = new HibernateTransactionManager();
-        transactionManager.setSessionFactory(sessionFactory().getObject());
+
+    @Bean
+    public PlatformTransactionManager transactionManager(){
+        //HibernateTransactionManager transactionManager = new HibernateTransactionManager();
+        // transactionManager.setSessionFactory(sessionFactory().getObject());
+        JpaTransactionManager transactionManager = new JpaTransactionManager();
+        transactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
 
         return transactionManager;
     }
+
+
+
+//    @Bean       //Метод для Контроля транзакциями
+//    public PlatformTransactionManager hibernateTransactionManager(){
+//        HibernateTransactionManager transactionManager = new HibernateTransactionManager();
+//        transactionManager.setSessionFactory(sessionFactory().getObject());
+//
+//        return transactionManager;
+//    }
 }
 
 
