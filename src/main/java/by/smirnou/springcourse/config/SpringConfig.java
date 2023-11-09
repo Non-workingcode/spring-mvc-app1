@@ -38,8 +38,7 @@ public class SpringConfig implements WebMvcConfigurer {
 
 //    private final Environment environment;
     private final ApplicationContext applicationContext;
-
-    private final Environment env;
+    private final Environment env; //Получение доступа к конфиг файлу
 
     @Autowired
     public SpringConfig(ApplicationContext applicationContext, Environment env) {
@@ -48,7 +47,7 @@ public class SpringConfig implements WebMvcConfigurer {
     }
 
 
-    //Thymeliaf
+    //Thymeleaf
     @Bean
     public SpringResourceTemplateResolver templateResolver() {
         SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
@@ -84,6 +83,7 @@ public class SpringConfig implements WebMvcConfigurer {
         dataSource.setUsername(env.getRequiredProperty("hibernate.connection.username"));
         dataSource.setPassword(env.getRequiredProperty("hibernate.connection.password"));
 
+
         return dataSource;
     }
 
@@ -100,6 +100,7 @@ public class SpringConfig implements WebMvcConfigurer {
 
         return properties;
     }
+
 
 //    @Bean
 //    public LocalSessionFactoryBean sessionFactory(){
