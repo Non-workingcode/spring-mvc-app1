@@ -3,6 +3,7 @@ package by.smirnou.springcourse.controlles;
 
 import by.smirnou.springcourse.models.Person;
 
+import by.smirnou.springcourse.services.ItemService;
 import by.smirnou.springcourse.services.PeopleService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +23,11 @@ public class PeopleController {
 //    private final PersonDAO personDAO;
 //    private final PersonValidator personValidator;
     private final PeopleService peopleService;
+    private final ItemService itemService;
 
     @Autowired
-    public PeopleController(PeopleService peopleService){
+    public PeopleController(PeopleService peopleService, ItemService itemService){
+        this.itemService = itemService;
         this.peopleService = peopleService;
     }
 
@@ -33,6 +36,12 @@ public class PeopleController {
     @GetMapping
     public String index(Model model){
        model.addAttribute("people" , peopleService.findAll());
+
+       itemService.findByItemName("Airpods");
+       itemService.findByOwner(peopleService.findAll().get(0));
+
+       peopleService.test();
+
         return "/people/index";
     }
 

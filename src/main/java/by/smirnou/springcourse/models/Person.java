@@ -1,7 +1,12 @@
 package by.smirnou.springcourse.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
+import java.util.List;
 
 
 @Entity
@@ -25,8 +30,26 @@ public class Person {
 
     @Column(name = "email")
     @Email
-    @NotEmpty(message = "e,ail should not be empty")
+    @NotEmpty(message = "email should not be empty")
     private String email;
+
+    @Enumerated(EnumType.STRING)
+    private Mood mood;
+
+
+    @OneToMany(mappedBy = "owner")
+    private List<Item> items;
+
+
+
+    @Column(name = "date_of_birth")
+    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "dd/MM/yyyy") //дд/мм/гггг
+    private Date dateOfBirth;
+
+    @Column(name = "created_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
 
 
 //    @Email
@@ -80,5 +103,46 @@ public class Person {
         this.email = email;
     }
 
+    public List<Item> getItems() {
+        return items;
+    }
 
+    public void setItems(List<Item> items) {
+        this.items = items;
+    }
+
+    public Date getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(Date dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+
+    public Mood getMood() {
+        return mood;
+    }
+
+    public void setMood(Mood mood) {
+        this.mood = mood;
+    }
+
+    @Override
+    public String toString() {
+        return "Person{" +
+                "name='" + name + '\'' +
+                ", age=" + age +
+                ", email='" + email + '\'' +
+                ", items=" + items +
+                '}';
+    }
 }
